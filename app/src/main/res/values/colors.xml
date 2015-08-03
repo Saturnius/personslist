@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="grey_bg">#eeeeee</color>
+    <color name="white_bg">#f8fcfa</color>
+    <color name="accent">#fc5151</color>
+    <color name="warning">#f52c3d</color>
+
+    <!-- main color for drawable-v21/my_ripple -->
+    <color name="color_highlight">#48bd73</color>
+    <!-- main color for drawable/my_ripple -->
+    <color name="color_highlight_press">#ff8080</color>
+    <color name="color_highlight_focus">#48bd73</color>
+    <color name="sub_text_color">#909090</color>
+    <color name="regular_text_color">#303030</color>
+
+</resources>

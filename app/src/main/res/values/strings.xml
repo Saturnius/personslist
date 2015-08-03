@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">People</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">Contact information</string>
+    <string name="no_data">No contacts</string>
+    <string name="logo">"contact type logo"</string>
+    <string name="failed_request">Failed request. Hit refresh button to try again.</string>
+
+
+</resources>
