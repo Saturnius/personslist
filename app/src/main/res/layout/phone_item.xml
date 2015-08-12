@@ -11,16 +11,15 @@
         android:id="@+id/phone_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
+        android:paddingLeft="@dimen/padding_dimen_normal"
         android:src="@drawable/ic_action_phone_start" />
 
     <TextView
         android:id="@+id/item_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingTop="16dp"
-        android:text="455244544458" />
+        android:paddingLeft="@dimen/padding_dimen_normal"
+        android:paddingTop="@dimen/padding_dimen_normal"/>
 
 
 </LinearLayout>

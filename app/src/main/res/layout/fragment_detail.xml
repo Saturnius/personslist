@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/grey_bg"
     android:orientation="vertical"
-    android:padding="@dimen/padding_dimen"
+    android:padding="@dimen/padding_dimen_normal"
     tools:context="com.example.pipedrive.android.personslist.detail.DetailActivityFragment">
 
     <!-- persons data (name and company)-->
@@ -15,9 +15,9 @@
         android:id="@+id/shared_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/vertical_margin"
         android:orientation="vertical"
-        android:padding="8dp" >
+        android:padding="@dimen/padding_dimen_small" >
 
         <TextView
             android:id="@+id/person_name"
@@ -40,10 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/vertical_margin"
         >
-
-
 
     </LinearLayout>
 
@@ -54,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/vertical_margin"
         >
 
 

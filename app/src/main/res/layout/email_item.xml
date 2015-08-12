@@ -13,15 +13,14 @@
         android:src="@drawable/ic_action_mail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"            />
+        android:paddingLeft="@dimen/padding_dimen_normal"            />
 
     <TextView
         android:id="@+id/item_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="455244544458"
-        android:paddingTop="16dp"
-        android:paddingLeft="16dp" />
+        android:paddingTop="@dimen/padding_dimen_normal"
+        android:paddingLeft="@dimen/padding_dimen_normal" />
 
 
 </LinearLayout>
