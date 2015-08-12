@@ -42,6 +42,12 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
 
     }
 
+    public void deleteTablesData(SQLiteDatabase db){
+        db.execSQL(sqlCommands.SQL_DELETE_PERSON_DATA);
+        db.execSQL(sqlCommands.SQL_DELETE_PHONE_DATA);
+        db.execSQL(sqlCommands.SQL_DELETE_EMAIL_DATA);
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         deleteAllTables(db);
@@ -76,8 +82,7 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
     //repopulate table
     public void refreshTable(SQLiteDatabase db) {
         if (db != null) {
-            deleteAllTables(db);
-            onCreate(db);
+            deleteTablesData(db);
         }
     }
 
@@ -110,6 +115,13 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
                 "DROP TABLE IF EXISTS " + PersonsContract.PhonesEntry.TABLE_NAME;
         private static final String SQL_DELETE_EMAIL_ENTRIES =
                 "DROP TABLE IF EXISTS " + PersonsContract.EmailsEntry.TABLE_NAME;
+
+        private static final String SQL_DELETE_PERSON_DATA =
+                "DELETE FROM " + PersonsContract.PersonsEntry.TABLE_NAME;
+        private static final String SQL_DELETE_PHONE_DATA =
+                "DELETE FROM " + PersonsContract.PhonesEntry.TABLE_NAME;
+        private static final String SQL_DELETE_EMAIL_DATA =
+                "DELETE FROM " + PersonsContract.EmailsEntry.TABLE_NAME;
     }
 
 
