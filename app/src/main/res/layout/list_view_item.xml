@@ -13,20 +13,20 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/grey_bg"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="@dimen/padding_dimen_small">
 
         <TextView
             android:id="@+id/list_item_person_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp" />
+            android:paddingLeft="@dimen/padding_dimen_normal" />
 
         <TextView
             android:id="@+id/list_item_company_view"
             style="@style/subText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp" />
+            android:paddingLeft="@dimen/padding_dimen_normal" />
 
 
     </LinearLayout>
