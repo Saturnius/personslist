@@ -9,6 +9,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.pipedrive.android.personslist.R;
+import com.example.pipedrive.android.personslist.data.PersonsContract;
 
 //custom adapter to load views from layout
 
@@ -31,9 +32,9 @@ public class CustomCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         // Read data from cursor
-        String name = cursor.getString(2);
+        String name = cursor.getString(PersonsContract.ColumnIndexes.PERSON_NAME);
         viewHolder.nameView.setText(name);
-        String organisationName = cursor.getString(3);
+        String organisationName = cursor.getString(PersonsContract.ColumnIndexes.ORG_NAME);
         viewHolder.companyView.setText(organisationName);
 
     }

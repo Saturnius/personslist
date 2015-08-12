@@ -63,9 +63,9 @@ public class DetailActivityFragment extends Fragment {
 
         person.moveToFirst();
         TextView view = (TextView) rootView.findViewById(R.id.person_name);
-        view.setText(person.getString(2));
+        view.setText(person.getString(PersonsContract.ColumnIndexes.PERSON_NAME));
         TextView viewOrg = (TextView) rootView.findViewById(R.id.org_name);
-        viewOrg.setText(person.getString(3));
+        viewOrg.setText(person.getString(PersonsContract.ColumnIndexes.ORG_NAME));
 
         person.close();
 
@@ -85,7 +85,7 @@ public class DetailActivityFragment extends Fragment {
     private void loadViews(Cursor cursor, int layoutId, LinearLayout layout) {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            String data = cursor.getString(2);
+            String data = cursor.getString(PersonsContract.ColumnIndexes.CONTACT_DATA);
             if (data.isEmpty()) {
                 return;
             }

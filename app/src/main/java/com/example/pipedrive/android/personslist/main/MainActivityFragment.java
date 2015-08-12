@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.pipedrive.android.personslist.R;
+import com.example.pipedrive.android.personslist.data.PersonsContract;
 import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 import com.example.pipedrive.android.personslist.detail.DetailActivity;
 
@@ -70,6 +71,7 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
         setRetainInstance(true);
         personsDbHelper = PersonsDbHelper.getInstance(getActivity());
+
     }
 
 
@@ -78,9 +80,10 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         personsAdapter = new CustomCursorAdapter(getActivity(), cursor, 0);
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        if(cursor == null){
+        progressBar.setVisibility(View.VISIBLE);}
         listView = (ListView) rootView.findViewById(R.id.list_view_persons);
         emptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
         listView.setEmptyView(emptyView);
@@ -95,7 +98,7 @@ public class MainActivityFragment extends Fragment {
                 Cursor cursor = (Cursor) personsAdapter.getItem(position);
                 if (cursor != null) {
                     Intent intent = new Intent(getActivity(), DetailActivity.class);
-                    intent.putExtra(Intent.EXTRA_TEXT, cursor.getString(1));
+                    intent.putExtra(Intent.EXTRA_TEXT, cursor.getString(PersonsContract.ColumnIndexes.PERSON_ID));
                     startActivity(intent);
 
                 }

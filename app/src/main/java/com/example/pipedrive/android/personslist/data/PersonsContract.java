@@ -30,4 +30,13 @@ public class PersonsContract {
 
     }
 
+    public abstract class ColumnIndexes {
+        public static final int _ID = 0;
+        public static final int PERSON_ID = 1;
+        public static final int PERSON_NAME = 2;
+        public static final int ORG_NAME = 3;
+        public static final int CONTACT_DATA = 2;
+
+    }
+
 }
