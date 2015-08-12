@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-
-import com.example.pipedrive.android.personslist.data.PersonsContract;
 import com.example.pipedrive.android.personslist.data.PersonsDbDataAccess;
 import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 
@@ -22,11 +20,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.example.pipedrive.android.personslist.data.PersonsContract.*;
+
 public class ContentLoader extends AsyncTaskLoader<Cursor> {
     private static final String LOG_TAG = "ContentLoader";
     private static PersonsDbHelper personsDbHelper;
     private static boolean hasMoreItems;
-    private static int start;
+
     private static boolean success;
     private Cursor cachedCursor;
 
@@ -35,7 +35,7 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
         super(context);
         personsDbHelper = PersonsDbHelper.getInstance(getContext());
         hasMoreItems = true;
-        start = 0;
+
     }
 
     @Override
@@ -44,10 +44,10 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
             personsDbHelper.refreshTable(personsDbHelper.getWritableDatabase());
         }
         Cursor readyCursor = null;
-
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String personsJsonStr = null;
+        int start = 0;
         int limit = 50;
         final String token = "f3fedaf634c3278bd30c7d0deef28707fe2386a2";
 
@@ -127,7 +127,7 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
 
 
                 Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
+
             }
         }
 
@@ -188,25 +188,16 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
             }
 
             JSONArray personsArray = personsJson.getJSONArray(PERSONS_DATA);
-
             for (int i = 0; i < personsArray.length(); i++) {
-
-                String name;
-                String organisationName;
-                int id;
-                String phoneNumber;
-                String emailAddress;
 
                 // get the JSON object representing a single person
                 JSONObject singlePerson = personsArray.getJSONObject(i);
-                id = singlePerson.getInt(PERSON_ID);
-
-                name = singlePerson.getString(NAME);
 
                 //check if company is null and get its name if not
-                if (singlePerson.isNull(ORGANISATION)) {
-                    organisationName = "";
-                } else {
+                String organisationName = "";
+
+                if (!singlePerson.isNull(ORGANISATION)) {
+
                     JSONObject organisation = singlePerson.getJSONObject(ORGANISATION);
                     organisationName = organisation.getString(NAME);
                 }
@@ -214,9 +205,9 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
                 //values to insert into person data table
                 ContentValues personValues = new ContentValues();
 
-                personValues.put(PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID, id);
-                personValues.put(PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_NAME, name);
-                personValues.put(PersonsContract.PersonsEntry.COLUMN_NAME_COMPANY_NAME, organisationName);
+                personValues.put(PersonsEntry.COLUMN_NAME_PERSON_ID, singlePerson.getInt(PERSON_ID));
+                personValues.put(PersonsEntry.COLUMN_NAME_PERSON_NAME, singlePerson.getString(NAME));
+                personValues.put(PersonsEntry.COLUMN_NAME_COMPANY_NAME, organisationName);
 
                 JSONArray phones = singlePerson.getJSONArray(PERSON_PHONE);
                 JSONArray emails = singlePerson.getJSONArray(PERSON_EMAIL);
@@ -224,17 +215,15 @@ public class ContentLoader extends AsyncTaskLoader<Cursor> {
                 //get & add phones
                 for (int j = 0; j < phones.length(); j++) {
                     ContentValues phoneValues = new ContentValues();
-                    phoneNumber = phones.getJSONObject(j).getString(VALUE);
-                    phoneValues.put(PersonsContract.PhonesEntry.COLUMN_NAME_PERSON_ID, id);
-                    phoneValues.put(PersonsContract.PhonesEntry.COLUMN_NAME_PHONES, phoneNumber);
+                    phoneValues.put(PhonesEntry.COLUMN_NAME_PERSON_ID, singlePerson.getInt(PERSON_ID));
+                    phoneValues.put(PhonesEntry.COLUMN_NAME_PHONES, phones.getJSONObject(j).getString(VALUE));
                     PersonsDbDataAccess.enterPhoneInfo(personsDbHelper, phoneValues);
                 }
                 //get & add emails
                 for (int k = 0; k < emails.length(); k++) {
                     ContentValues emailValues = new ContentValues();
-                    emailAddress = emails.getJSONObject(k).getString(VALUE);
-                    emailValues.put(PersonsContract.EmailsEntry.COLUMN_NAME_PERSON_ID, id);
-                    emailValues.put(PersonsContract.EmailsEntry.COLUMN_NAME_EMAILS, emailAddress);
+                    emailValues.put(EmailsEntry.COLUMN_NAME_PERSON_ID, singlePerson.getInt(PERSON_ID));
+                    emailValues.put(EmailsEntry.COLUMN_NAME_EMAILS, emails.getJSONObject(k).getString(VALUE));
                     PersonsDbDataAccess.enterEmailInfo(personsDbHelper, emailValues);
                 }
 

@@ -8,35 +8,34 @@ import android.database.sqlite.SQLiteDatabase;
 public class PersonsDbDataAccess {
 
 
-    public static void enterPersonInfo(PersonsDbHelper personsDbHelper, ContentValues cv) {
-        long newRowId;
-        ContentValues contentValues = cv;
+
+
+    public static void enterPersonInfo(PersonsDbHelper personsDbHelper, ContentValues contentValues) {
+
         SQLiteDatabase sq = personsDbHelper.getWritableDatabase();
 
-        newRowId = sq.insert(
+        long newRowId = sq.insert(
                 PersonsContract.PersonsEntry.TABLE_NAME,
                 null,
                 contentValues);
     }
 
 
-    public static void enterPhoneInfo(PersonsDbHelper personsDbHelper, ContentValues cv) {
-        long newRowId;
-        ContentValues contentValues = cv;
+    public static void enterPhoneInfo(PersonsDbHelper personsDbHelper, ContentValues contentValues) {
+
         SQLiteDatabase sq = personsDbHelper.getWritableDatabase();
 
-        newRowId = sq.insert(
+       long newRowId = sq.insert(
                 PersonsContract.PhonesEntry.TABLE_NAME,
                 null,
                 contentValues);
     }
 
-    public static void enterEmailInfo(PersonsDbHelper personsDbHelper, ContentValues cv) {
-        long newRowId;
-        ContentValues contentValues = cv;
+    public static void enterEmailInfo(PersonsDbHelper personsDbHelper, ContentValues contentValues) {
+
         SQLiteDatabase sq = personsDbHelper.getWritableDatabase();
 
-        newRowId = sq.insert(
+        long newRowId = sq.insert(
                 PersonsContract.EmailsEntry.TABLE_NAME,
                 null,
                 contentValues);
