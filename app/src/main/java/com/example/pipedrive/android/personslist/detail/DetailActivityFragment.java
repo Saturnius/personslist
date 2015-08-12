@@ -7,11 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.pipedrive.android.personslist.R;
+import com.example.pipedrive.android.personslist.data.PersonsContract;
 import com.example.pipedrive.android.personslist.data.PersonsDbDataAccess;
 import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 
@@ -21,6 +24,9 @@ public class DetailActivityFragment extends Fragment {
     private LinearLayout phoneLayout;
     private LinearLayout emailLayout;
     private View rootView;
+
+
+
 
     public DetailActivityFragment() {
     }
@@ -67,16 +73,16 @@ public class DetailActivityFragment extends Fragment {
         loadViews(
                 //get cursor for phone records
                 PersonsDbDataAccess.getPhoneCursor(personsDbHelper, id),
-                R.drawable.ic_action_phone_start, phoneLayout);
+                R.layout.phone_item, phoneLayout);
 
         loadViews(
                 //get cursor for email records
                 PersonsDbDataAccess.getEmailCursor(personsDbHelper, id),
-                R.drawable.ic_action_mail, emailLayout);
+                R.layout.email_item, emailLayout);
     }
 
 
-    public void loadViews(Cursor cursor, int id, LinearLayout layout) {
+    private void loadViews(Cursor cursor, int layoutId, LinearLayout layout) {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             String data = cursor.getString(2);
@@ -84,30 +90,11 @@ public class DetailActivityFragment extends Fragment {
                 return;
             }
 
-            // create linear layout and add views
-            LinearLayout subLayout = new LinearLayout(getActivity());
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            View contactView = LayoutInflater.from(getActivity()).inflate(layoutId, layout, false);
+            TextView tv = (TextView)contactView.findViewById(R.id.item_text_view);
+            tv.setText(data);
+            layout.addView(contactView);
 
-            layoutParams.setMargins(16, 16, 16, 8);
-
-            //create and load views
-            ImageView img = new ImageView(getActivity());
-            img.setImageDrawable(getResources().getDrawable(id));
-            img.setContentDescription(getResources().getString(R.string.logo));
-
-            TextView contactView = new TextView(getActivity());
-            contactView.setText(data);
-            contactView.setPadding(0, 25, 0, 0);
-            img.setPadding(0, 0, 25, 0);
-
-            //add views to the sublayout
-            subLayout.addView(img);
-            subLayout.addView(contactView);
-            subLayout.setBackgroundColor(getResources().getColor(R.color.white_bg));
-
-            //add newly created layout to a specific layout passed as an argument
-            layout.addView(subLayout, layoutParams);
             cursor.moveToNext();
         }
         cursor.close();
