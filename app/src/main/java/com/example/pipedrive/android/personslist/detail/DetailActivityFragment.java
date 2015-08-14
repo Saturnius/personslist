@@ -7,10 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.pipedrive.android.personslist.R;
@@ -34,7 +31,6 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setRetainInstance(true);
 
     }
@@ -57,7 +53,7 @@ public class DetailActivityFragment extends Fragment {
 
     }
 
-    public void getDetailedInfo(String id) {
+    private void getDetailedInfo(String id) {
         //first get person name & company
         Cursor person = PersonsDbDataAccess.getPersonCursor(personsDbHelper, id);
 
