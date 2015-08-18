@@ -43,10 +43,14 @@ public class TestDb extends AndroidTestCase {
         assertTrue("Error: No Records returned from location query", cursor.moveToFirst());
 
         //verify columns data
-        assertTrue("Error: wrong info in the column 0", cursor.getInt(0) == 1);
-        assertTrue("Error: wrong info in the column 1", cursor.getInt(1) == 2);
-        assertTrue("Error: wrong info in the column 2", cursor.getString(2).equals("Jon Snow"));
-        assertTrue("Error: wrong info in the column 3", cursor.getString(3).equals("Stark Ltd."));
+        assertTrue("Error: wrong info in the column 0", cursor.getInt(PersonsContract.ColumnIndexes._ID) == 1);
+        assertTrue("Error: wrong info in the column 1", cursor.getInt(PersonsContract.ColumnIndexes.PERSON_ID) == 2);
+        assertTrue("Error: wrong info in the column 2", cursor.getString(PersonsContract.ColumnIndexes.PERSON_NAME).equals("Jon Snow"));
+        assertTrue("Error: wrong info in the column 3", cursor.getString(PersonsContract.ColumnIndexes.ORG_NAME).equals("Stark Ltd."));
+        assertTrue("Error: wrong type of info in the column 0", cursor.getType(PersonsContract.ColumnIndexes._ID) == Cursor.FIELD_TYPE_INTEGER );
+        assertTrue("Error: wrong type of info in the column 1", cursor.getType(PersonsContract.ColumnIndexes.PERSON_ID) == Cursor.FIELD_TYPE_INTEGER );
+        assertTrue("Error: wrong type of info in the column 0", cursor.getType(PersonsContract.ColumnIndexes.PERSON_NAME) == Cursor.FIELD_TYPE_STRING );
+        assertTrue("Error: wrong type of info in the column 1", cursor.getType(PersonsContract.ColumnIndexes.ORG_NAME) == Cursor.FIELD_TYPE_STRING );
 
         assertFalse("Error: More than one record returned from location query", cursor.moveToNext());
         cursor.close();
