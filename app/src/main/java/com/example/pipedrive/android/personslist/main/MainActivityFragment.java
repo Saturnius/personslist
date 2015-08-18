@@ -36,7 +36,7 @@ public class MainActivityFragment extends Fragment {
     private PersonsDbHelper personsDbHelper;
     private CompositeSubscription compositeSubscription;
     private PersonsDataManager personsDataManager;
-    private boolean refreshEnabled = true;
+    private boolean refreshEnabled;
 
     public MainActivityFragment() {
 
@@ -132,6 +132,7 @@ public class MainActivityFragment extends Fragment {
         super.onDestroy();
 
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
