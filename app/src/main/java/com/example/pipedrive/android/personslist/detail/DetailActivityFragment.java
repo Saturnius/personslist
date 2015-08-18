@@ -21,13 +21,7 @@ public class DetailActivityFragment extends Fragment {
     private LinearLayout emailLayout;
     private View rootView;
 
-    public DetailActivityFragment() {
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
