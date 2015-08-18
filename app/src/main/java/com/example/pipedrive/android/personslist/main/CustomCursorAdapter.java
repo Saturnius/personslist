@@ -11,46 +11,33 @@ import android.widget.TextView;
 import com.example.pipedrive.android.personslist.R;
 import com.example.pipedrive.android.personslist.data.PersonsContract;
 
-//custom adapter to load views from layout
 
-public class CustomCursorAdapter extends CursorAdapter {
 
-    public CustomCursorAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
-    }
+    public class CustomCursorAdapter extends CursorAdapter {
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_view_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
+        public CustomCursorAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+        }
 
-        return view;
-    }
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return LayoutInflater.from(context).inflate(R.layout.list_view_item, parent, false);
+        }
 
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
-        // Read data from cursor
-        String name = cursor.getString(PersonsContract.ColumnIndexes.PERSON_NAME);
-        viewHolder.nameView.setText(name);
-        String organisationName = cursor.getString(PersonsContract.ColumnIndexes.ORG_NAME);
-        viewHolder.companyView.setText(organisationName);
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
 
-    }
+            TextView nameView = (TextView) view.findViewById(R.id.list_item_person_view);
+            String name = cursor.getString(PersonsContract.ColumnIndexes.PERSON_NAME);
+            nameView.setText(name);
 
-    public static class ViewHolder {
-        public final TextView nameView;
-        public final TextView companyView;
-
-        public ViewHolder(View view) {
-            nameView = (TextView) view.findViewById(R.id.list_item_person_view);
-            companyView = (TextView) view.findViewById(R.id.list_item_company_view);
+            TextView companyView = (TextView) view.findViewById(R.id.list_item_company_view);
+            String organisationName = cursor.getString(PersonsContract.ColumnIndexes.ORG_NAME);
+            companyView.setText(organisationName);
 
 
         }
 
-    }
 
 
 
