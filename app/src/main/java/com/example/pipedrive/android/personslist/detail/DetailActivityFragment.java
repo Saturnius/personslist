@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.example.pipedrive.android.personslist.R;
 import com.example.pipedrive.android.personslist.data.PersonsContract;
-import com.example.pipedrive.android.personslist.data.PersonsDbDataAccess;
 import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 
 
@@ -22,17 +21,12 @@ public class DetailActivityFragment extends Fragment {
     private LinearLayout emailLayout;
     private View rootView;
 
-
-
-
     public DetailActivityFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-
     }
 
     @Override
@@ -55,7 +49,7 @@ public class DetailActivityFragment extends Fragment {
 
     private void getDetailedInfo(String id) {
         //first get person name & company
-        Cursor person = PersonsDbDataAccess.getPersonCursor(personsDbHelper, id);
+        Cursor person = personsDbHelper.getPersonCursor(id);
 
         person.moveToFirst();
         TextView view = (TextView) rootView.findViewById(R.id.person_name);
@@ -68,12 +62,12 @@ public class DetailActivityFragment extends Fragment {
 
         loadViews(
                 //get cursor for phone records
-                PersonsDbDataAccess.getPhoneCursor(personsDbHelper, id),
+                personsDbHelper.getPhoneCursor(id),
                 R.layout.phone_item, phoneLayout);
 
         loadViews(
                 //get cursor for email records
-                PersonsDbDataAccess.getEmailCursor(personsDbHelper, id),
+                personsDbHelper.getEmailCursor(id),
                 R.layout.email_item, emailLayout);
     }
 
