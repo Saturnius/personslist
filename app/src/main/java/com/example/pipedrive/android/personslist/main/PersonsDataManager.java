@@ -24,7 +24,7 @@ import rx.Subscriber;
 public class PersonsDataManager {
 
     private static PersonsDataManager instance;
-    private final int LIMIT = 5;
+    private final int LIMIT = 50;
     private int start = 0;
     private PersonsDbHelper personsDbHelper;
     private boolean hasMoreItems;
