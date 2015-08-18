@@ -1,11 +1,10 @@
 package com.example.pipedrive.android.personslist.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
-
 
 public class PersonsDbHelper extends SQLiteOpenHelper {
 
@@ -18,13 +17,36 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
     }
-   //using singleton
+
+    //using singleton
     public static synchronized PersonsDbHelper getInstance(Context context) {
         if (instance == null) {
             instance = new PersonsDbHelper(context.getApplicationContext());
         }
 
         return instance;
+    }
+
+    //full data query not in use
+    public static Cursor getContactData(PersonsDbHelper personsDbHelper, String id) {
+        SQLiteDatabase sq = personsDbHelper.getReadableDatabase();
+        String sql = "SELECT " + PersonsContract.PersonsEntry.TABLE_NAME + "." + PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID + ", " +
+                PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_NAME + ", " +
+                PersonsContract.PersonsEntry.COLUMN_NAME_COMPANY_NAME + ", " + PersonsContract.PhonesEntry.COLUMN_NAME_PHONES +
+                ", " + PersonsContract.EmailsEntry.COLUMN_NAME_EMAILS +
+                " FROM " + PersonsContract.PersonsEntry.TABLE_NAME +
+                " LEFT JOIN " + PersonsContract.PhonesEntry.TABLE_NAME +
+                " ON " + PersonsContract.PersonsEntry.TABLE_NAME + "." + PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID +
+                " = " + PersonsContract.PhonesEntry.TABLE_NAME + "." + PersonsContract.PhonesEntry.COLUMN_NAME_PERSON_ID +
+
+                " LEFT JOIN " + PersonsContract.EmailsEntry.TABLE_NAME +
+                " ON " + PersonsContract.PersonsEntry.TABLE_NAME + "." + PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID +
+                " = " + PersonsContract.EmailsEntry.TABLE_NAME + "." + PersonsContract.EmailsEntry.COLUMN_NAME_PERSON_ID +
+                " WHERE " + PersonsContract.PersonsEntry.TABLE_NAME + "." + PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID + "=" + id + ";";
+
+        return sq.rawQuery(sql, null);
+
+
     }
 
     @Override
@@ -35,14 +57,15 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public void deleteAllTables(SQLiteDatabase db) {
+    private void deleteAllTables(SQLiteDatabase db) {
         db.execSQL(sqlCommands.SQL_DELETE_PERSON_ENTRIES);
         db.execSQL(sqlCommands.SQL_DELETE_PHONE_ENTRIES);
         db.execSQL(sqlCommands.SQL_DELETE_EMAIL_ENTRIES);
 
     }
 
-    public void deleteTablesData(SQLiteDatabase db){
+    private void deleteTablesData() {
+        SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(sqlCommands.SQL_DELETE_PERSON_DATA);
         db.execSQL(sqlCommands.SQL_DELETE_PHONE_DATA);
         db.execSQL(sqlCommands.SQL_DELETE_EMAIL_DATA);
@@ -60,30 +83,81 @@ public class PersonsDbHelper extends SQLiteOpenHelper {
         super.close();
     }
 
-    //testing method to log out the db
-    public String getTableAsString(SQLiteDatabase db) {
-        String tableString = String.format("Table %s:\n", PersonsContract.PersonsEntry.TABLE_NAME);
-        Cursor allRows = db.rawQuery("SELECT * FROM " + PersonsContract.PersonsEntry.TABLE_NAME, null);
-        if (allRows.moveToFirst()) {
-            String[] columnNames = allRows.getColumnNames();
-            do {
-                for (String name : columnNames) {
-                    tableString += String.format("%s: %s\n", name,
-                            allRows.getString(allRows.getColumnIndex(name)));
-                }
-                tableString += "\n";
-
-            } while (allRows.moveToNext());
-        }
-
-        return tableString;
-    }
 
     //repopulate table
-    public void refreshTable(SQLiteDatabase db) {
+    public void refreshTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
-            deleteTablesData(db);
+            deleteTablesData();
         }
+    }
+
+    public void enterPersonInfo(ContentValues contentValues) {
+
+        SQLiteDatabase sq = this.getWritableDatabase();
+
+        sq.insert(
+                PersonsContract.PersonsEntry.TABLE_NAME,
+                null,
+                contentValues);
+    }
+
+
+    public void enterPhoneInfo(ContentValues contentValues) {
+
+        SQLiteDatabase sq = this.getWritableDatabase();
+
+        sq.insert(
+                PersonsContract.PhonesEntry.TABLE_NAME,
+                null,
+                contentValues);
+    }
+
+    public void enterEmailInfo(ContentValues contentValues) {
+
+        SQLiteDatabase sq = this.getWritableDatabase();
+
+        sq.insert(
+                PersonsContract.EmailsEntry.TABLE_NAME,
+                null,
+                contentValues);
+    }
+
+    public Cursor getPersonCursor(String id) {
+        String WHERE;
+        if (id == null) {
+            WHERE = null;
+        } else {
+            WHERE = "person_id" + "=" + id;
+        }
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String sortOrder = "LOWER (" +
+                PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_NAME + ") ASC";
+        String[] columns = {PersonsContract.PersonsEntry._ID, PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_ID, PersonsContract.PersonsEntry.COLUMN_NAME_PERSON_NAME, PersonsContract.PersonsEntry.COLUMN_NAME_COMPANY_NAME};
+        return sq.query(PersonsContract.PersonsEntry.TABLE_NAME, columns, WHERE, null, null, null, sortOrder);
+
+    }
+
+
+    public Cursor getPhoneCursor(String id) {
+        String WHERE = "person_id" + "=" + id;
+        String sortOrder = "LOWER (" +
+                PersonsContract.PhonesEntry.COLUMN_NAME_PHONES + ") ASC";
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String[] columns = {PersonsContract.PhonesEntry._ID, PersonsContract.PhonesEntry.COLUMN_NAME_PERSON_ID, PersonsContract.PhonesEntry.COLUMN_NAME_PHONES};
+        return sq.query(PersonsContract.PhonesEntry.TABLE_NAME, columns, WHERE, null, null, null, sortOrder);
+
+    }
+
+
+    public Cursor getEmailCursor(String id) {
+        String WHERE = "person_id" + "=" + id;
+        String sortOrder = "LOWER (" +
+                PersonsContract.EmailsEntry.COLUMN_NAME_EMAILS + ") ASC";
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String[] columns = {PersonsContract.EmailsEntry._ID, PersonsContract.EmailsEntry.COLUMN_NAME_PERSON_ID, PersonsContract.EmailsEntry.COLUMN_NAME_EMAILS};
+        return sq.query(PersonsContract.EmailsEntry.TABLE_NAME, columns, WHERE, null, null, null, sortOrder);
+
     }
 
     static class sqlCommands {
