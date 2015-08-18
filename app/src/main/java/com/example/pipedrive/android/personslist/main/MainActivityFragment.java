@@ -38,11 +38,7 @@ public class MainActivityFragment extends Fragment {
     private PersonsDataManager personsDataManager;
     private boolean refreshEnabled;
 
-    public MainActivityFragment() {
-
-    }
-
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
