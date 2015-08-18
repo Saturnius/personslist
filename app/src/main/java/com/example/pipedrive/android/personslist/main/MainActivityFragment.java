@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,55 +21,74 @@ import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 import com.example.pipedrive.android.personslist.detail.DetailActivity;
 
 
+
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+
+
 public class MainActivityFragment extends Fragment {
-    TextView emptyView;
-    ListView listView;
-    ProgressBar progressBar;
+    private MenuItem refreshButton;
+    private TextView emptyView;
+    private ProgressBar progressBar;
     private CustomCursorAdapter personsAdapter;
-    private Cursor cursor;
     private PersonsDbHelper personsDbHelper;
-
-    //loader manager to access custom cursor loader (ContentLoader) which will run in the background
-    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new ContentLoader(getActivity());
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            //hide progressbar
-            progressBar.setVisibility(View.GONE);
-
-            if (data == null) {
-                emptyView.setTextColor(getResources().getColor(R.color.warning));
-                emptyView.setText(R.string.failed_request);
-            } else if (data.getCount() == 0) {
-                emptyView.setTextColor(getResources().getColor(R.color.regular_text_color));
-                emptyView.setText(R.string.no_data);
-            }
-            cursor = data;
-            personsAdapter.swapCursor(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            personsAdapter.swapCursor(null);
-        }
-
-    };
+    private CompositeSubscription compositeSubscription;
+    private PersonsDataManager personsDataManager;
+    private boolean refreshEnabled = true;
 
     public MainActivityFragment() {
 
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
         personsDbHelper = PersonsDbHelper.getInstance(getActivity());
+        personsDataManager = PersonsDataManager.getInstance(getActivity());
+        compositeSubscription = new CompositeSubscription();
+        compositeSubscription.add(getSubscription());
 
+    }
+
+
+    private Subscription getSubscription() {
+        return personsDataManager.dataObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Cursor>() {
+                    @Override
+                    public void onCompleted() {
+                        if(!refreshEnabled){
+                            setRefreshButton(true);}
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        progressBar.setVisibility(View.GONE);
+                        setEmptyView(R.color.warning, R.string.failed_request);
+                        if(!refreshEnabled){
+                            setRefreshButton(true);}
+                    }
+
+                    @Override
+                    public void onNext(Cursor cursor) {
+                        progressBar.setVisibility(View.GONE);
+                        if (cursor.getCount() == 0) {
+                            setEmptyView(R.color.regular_text_color, R.string.no_data);
+                        } else if (cursor == null) {
+                            setEmptyView(R.color.warning, R.string.failed_request);
+                        } else {
+                            personsAdapter.changeCursor(cursor);
+                        }
+
+
+                    }
+                });
     }
 
 
@@ -79,17 +96,17 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        personsAdapter = new CustomCursorAdapter(getActivity(), cursor, 0);
+        personsAdapter = new CustomCursorAdapter(getActivity(), null, 0);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        if(cursor == null){
-        progressBar.setVisibility(View.VISIBLE);}
-        listView = (ListView) rootView.findViewById(R.id.list_view_persons);
+
+        progressBar.setVisibility(View.VISIBLE);
+        ListView listView = (ListView) rootView.findViewById(R.id.list_view_persons);
         emptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
         listView.setEmptyView(emptyView);
         listView.setAdapter(personsAdapter);
 
-        //start new activity on click
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -110,31 +127,17 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (cursor == null) {
-            loadData();
-        }
-    }
-
-    public void loadData() {
-        getActivity().getSupportLoaderManager().initLoader(R.id.content_loader, null, loaderCallbacks);
-    }
-
-
-    @Override
     public void onDestroy() {
-        super.onDestroy();
-        personsDbHelper.deleteAllTables(personsDbHelper.getWritableDatabase());
-        cursor.close();
         personsDbHelper.close();
+        compositeSubscription.unsubscribe();
+        super.onDestroy();
 
     }
 
-    //menu with refresh button
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_menu, menu);
+        refreshButton = menu.findItem(R.id.action_refresh);
     }
 
 
@@ -142,13 +145,33 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            getActivity().getSupportLoaderManager().destroyLoader((R.id.content_loader));
-            progressBar.setVisibility(View.VISIBLE);
-            loadData();
+            setRefreshButton(false);
+            resetUI();
+            personsDataManager.invalidateCache();
+            compositeSubscription.add(getSubscription());
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void setEmptyView(int colorId, int messageId) {
+        emptyView.setTextColor(getResources().getColor(colorId));
+        emptyView.setText(messageId);
+
+    }
+
+    private void resetUI(){
+        progressBar.setVisibility(View.VISIBLE);
+        emptyView.setText("");
+        personsAdapter.changeCursor(null);
+    }
+
+    private void setRefreshButton(boolean enabled){
+        refreshEnabled = enabled;
+        refreshButton.setEnabled(enabled);
+        refreshButton.setVisible(enabled);
     }
 
 
