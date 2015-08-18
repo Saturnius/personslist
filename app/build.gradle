@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "23.0.0 rc3"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.example.pipedrive.android.personslist"
@@ -24,5 +24,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     //library for custom ripple
     compile 'com.balysv:material-ripple:1.0.2'
+    compile 'io.reactivex:rxandroid:1.0.1'
+
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
 }
