@@ -9,7 +9,7 @@
     >
 
     <ImageView
-        android:id="@+id/phone_item_icon"
+        android:id="@+id/item_icon"
         android:src="@drawable/ic_action_mail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

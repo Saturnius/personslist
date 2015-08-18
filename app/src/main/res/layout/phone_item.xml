@@ -8,7 +8,7 @@
     >
 
     <ImageView
-        android:id="@+id/phone_item_icon"
+        android:id="@+id/item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/padding_dimen_normal"
