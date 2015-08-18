@@ -38,16 +38,15 @@ public class MainActivityFragment extends Fragment {
     private PersonsDataManager personsDataManager;
     private boolean refreshEnabled;
 
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         personsDbHelper = PersonsDbHelper.getInstance(getActivity());
-        personsDataManager = PersonsDataManager.getInstance(getActivity());
+        personsDataManager = new PersonsDataManager(getActivity());
         compositeSubscription = new CompositeSubscription();
         compositeSubscription.add(getSubscription());
-
 
     }
 
@@ -76,12 +75,11 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onNext(Cursor cursor) {
                         progressBar.setVisibility(View.GONE);
-                        if (cursor.getCount() == 0) {
-                            setEmptyView(R.color.regular_text_color, R.string.no_data);
-                        } else {
-                            personsAdapter.changeCursor(cursor);
-                        }
-
+                            if (cursor.getCount() == 0) {
+                                setEmptyView(R.color.regular_text_color, R.string.no_data);
+                            } else {
+                                personsAdapter.changeCursor(cursor);
+                            }
 
                     }
                 });
@@ -125,6 +123,7 @@ public class MainActivityFragment extends Fragment {
     public void onDestroy() {
         personsDbHelper.close();
         compositeSubscription.unsubscribe();
+        personsAdapter.changeCursor(null);
         super.onDestroy();
 
     }
@@ -135,9 +134,6 @@ public class MainActivityFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_menu, menu);
         refreshButton = menu.findItem(R.id.action_refresh);
-        if(refreshEnabled){
-            setRefreshButton(true);
-        }
 
 
     }
@@ -148,9 +144,7 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             setRefreshButton(false);
-            resetUI();
-            personsDataManager.invalidateCache();
-            compositeSubscription.add(getSubscription());
+            refreshUI();
             return true;
         }
 
@@ -164,10 +158,11 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    private void resetUI() {
+    private void refreshUI (){
         progressBar.setVisibility(View.VISIBLE);
         emptyView.setText("");
         personsAdapter.changeCursor(null);
+        compositeSubscription.add(getSubscription());
     }
 
     private void setRefreshButton(boolean enabled) {

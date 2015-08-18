@@ -23,50 +23,36 @@ import rx.Subscriber;
 
 public class PersonsDataManager {
 
-    private static PersonsDataManager instance;
+
     private final int LIMIT = 50;
     private int start = 0;
     private PersonsDbHelper personsDbHelper;
     private boolean hasMoreItems;
     private boolean success;
-    private Observable<Cursor> cachedObservable;
 
-    private PersonsDataManager(Context context) {
+
+    public PersonsDataManager(Context context) {
         hasMoreItems = false;
         personsDbHelper = PersonsDbHelper.getInstance(context);
         success = true;
 
     }
 
-    public static synchronized PersonsDataManager getInstance(Context context) {
-        if (instance == null) {
-            instance = new PersonsDataManager(context.getApplicationContext());
-        }
-
-        return instance;
-
-    }
 
     public Observable<Cursor> dataObservable() {
-        if (cachedObservable == null) {
-            cachedObservable =
-                    Observable.create(
+        return  Observable.create(
                             new Observable.OnSubscribe<Cursor>() {
                                 @Override
                                 public void call(Subscriber<? super Cursor> sub) {
                                     sub.onNext(loadInBackground());
                                     sub.onCompleted();
                                 }
-
                             }
-                    ).cache();
+                    );
         }
-        return cachedObservable;
-    }
 
-    public synchronized void invalidateCache() {
-        cachedObservable = null;
-    }
+
+
 
     private String getJsonString(String url) {
         String jsonString = "";
@@ -84,7 +70,7 @@ public class PersonsDataManager {
         return jsonString;
     }
 
-    private synchronized Cursor loadInBackground() {
+    private Cursor loadInBackground() {
         personsDbHelper.refreshTable();
         start = 0;
 
