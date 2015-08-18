@@ -52,6 +52,7 @@ public class MainActivityFragment extends Fragment {
         compositeSubscription = new CompositeSubscription();
         compositeSubscription.add(getSubscription());
 
+
     }
 
 
@@ -98,7 +99,6 @@ public class MainActivityFragment extends Fragment {
         personsAdapter = new CustomCursorAdapter(getActivity(), null, 0);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-
         progressBar.setVisibility(View.VISIBLE);
         ListView listView = (ListView) rootView.findViewById(R.id.list_view_persons);
         emptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
@@ -136,8 +136,14 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_menu, menu);
         refreshButton = menu.findItem(R.id.action_refresh);
+        if(refreshEnabled){
+            setRefreshButton(true);
+        }
+
+
     }
 
 
