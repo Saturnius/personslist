@@ -21,7 +21,6 @@ import com.example.pipedrive.android.personslist.data.PersonsDbHelper;
 import com.example.pipedrive.android.personslist.detail.DetailActivity;
 
 
-
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -63,16 +62,18 @@ public class MainActivityFragment extends Fragment {
                 .subscribe(new Subscriber<Cursor>() {
                     @Override
                     public void onCompleted() {
-                        if(!refreshEnabled){
-                            setRefreshButton(true);}
+                        if (!refreshEnabled) {
+                            setRefreshButton(true);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         progressBar.setVisibility(View.GONE);
                         setEmptyView(R.color.warning, R.string.failed_request);
-                        if(!refreshEnabled){
-                            setRefreshButton(true);}
+                        if (!refreshEnabled) {
+                            setRefreshButton(true);
+                        }
                     }
 
                     @Override
@@ -80,8 +81,6 @@ public class MainActivityFragment extends Fragment {
                         progressBar.setVisibility(View.GONE);
                         if (cursor.getCount() == 0) {
                             setEmptyView(R.color.regular_text_color, R.string.no_data);
-                        } else if (cursor == null) {
-                            setEmptyView(R.color.warning, R.string.failed_request);
                         } else {
                             personsAdapter.changeCursor(cursor);
                         }
@@ -162,13 +161,13 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    private void resetUI(){
+    private void resetUI() {
         progressBar.setVisibility(View.VISIBLE);
         emptyView.setText("");
         personsAdapter.changeCursor(null);
     }
 
-    private void setRefreshButton(boolean enabled){
+    private void setRefreshButton(boolean enabled) {
         refreshEnabled = enabled;
         refreshButton.setEnabled(enabled);
         refreshButton.setVisible(enabled);
