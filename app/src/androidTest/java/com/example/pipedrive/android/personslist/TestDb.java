@@ -49,8 +49,8 @@ public class TestDb extends AndroidTestCase {
         assertTrue("Error: wrong info in the column 3", cursor.getString(PersonsContract.ColumnIndexes.ORG_NAME).equals("Stark Ltd."));
         assertTrue("Error: wrong type of info in the column 0", cursor.getType(PersonsContract.ColumnIndexes._ID) == Cursor.FIELD_TYPE_INTEGER );
         assertTrue("Error: wrong type of info in the column 1", cursor.getType(PersonsContract.ColumnIndexes.PERSON_ID) == Cursor.FIELD_TYPE_INTEGER );
-        assertTrue("Error: wrong type of info in the column 0", cursor.getType(PersonsContract.ColumnIndexes.PERSON_NAME) == Cursor.FIELD_TYPE_STRING );
-        assertTrue("Error: wrong type of info in the column 1", cursor.getType(PersonsContract.ColumnIndexes.ORG_NAME) == Cursor.FIELD_TYPE_STRING );
+        assertTrue("Error: wrong type of info in the column 2", cursor.getType(PersonsContract.ColumnIndexes.PERSON_NAME) == Cursor.FIELD_TYPE_STRING );
+        assertTrue("Error: wrong type of info in the column 3", cursor.getType(PersonsContract.ColumnIndexes.ORG_NAME) == Cursor.FIELD_TYPE_STRING );
 
         assertFalse("Error: More than one record returned from location query", cursor.moveToNext());
         cursor.close();
